@@ -1,0 +1,2 @@
+# SUServer
+server for SamaraUniversityApp
