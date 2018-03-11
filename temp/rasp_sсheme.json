@@ -1,0 +1,25 @@
+{
+  "time": [],
+  "weeks": [
+    {
+      "weekNumber": 0,
+      "days": [
+        {
+          "dayOfWeek": 0,
+          "lessons": [
+            {
+              "discipline": "Системное программирование",
+              "type": "Лекционная нагрузка",
+              "teacher": {
+                "id": 0,
+                "firstName": "Николай",
+                "middleName": "Александрович",
+                "lastName": "Ивлиев"
+              }
+            },
+          ]
+        },
+      ]
+    }
+  ]
+}
