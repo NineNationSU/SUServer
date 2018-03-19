@@ -41,6 +41,18 @@ public class DatabaseConnector {
         return statement;
     }
 
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public Driver getDriver() {
+        return driver;
+    }
+
+    public void close() throws SQLException {
+        connection.close();
+    }
+
     /**
      * Данная функция считывает логин и пароль от базы данных из json-файла
      * @throws IOException если файл не найден или чтение не удается

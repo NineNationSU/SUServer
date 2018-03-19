@@ -1,4 +1,7 @@
+package timetable;
+
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,6 @@ public class TimeTable {
 
     @Override
     public String toString() {
-        return new Gson().toJson(this);
+        return new GsonBuilder().setPrettyPrinting().create().toJson(this);
     }
 }
