@@ -3,6 +3,7 @@ package database.utility;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import constants.FileNames;
+import database.exceptions.ObjectInitException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -14,20 +15,43 @@ import static constants.FileNames.LOG_PASS_DATABASE;
 /**
  *
  */
-public class DatabaseConnector {
+public  class DatabaseConnector {
+
+    public static class CloseConnectorException extends Exception{
+        CloseConnectorException(){
+            super("DatabaseConnector is close");
+        }
+    }
+
     private String URL = "jdbc:mysql://localhost:3306/suappdatabase_test?autoReconnect=true&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC";
     private String USER;
     private String PASSWORD;
     private Connection connection;
     private Driver driver;
     private Statement statement;
+    private static Boolean close = false;
+    private static DatabaseConnector instance;
+
+    public static synchronized DatabaseConnector getInstance() throws IOException, SQLException, CloseConnectorException {
+        if (close){
+            throw new CloseConnectorException();
+        }
+        if (instance == null){
+            instance = new  DatabaseConnector();
+            instance.build();
+        }
+        return instance;
+    }
+
+    private DatabaseConnector()  {
+    }
 
     /**
      *
      * @throws SQLException если не удалось создать подключение к базе данных
      * @throws IOException если не удалось получить логин и пароль
      */
-    public DatabaseConnector() throws SQLException, IOException {
+    private synchronized void build() throws SQLException, IOException {
         getLogPass();
         System.out.println(USER);
         System.out.println(PASSWORD);
@@ -37,27 +61,50 @@ public class DatabaseConnector {
         statement = connection.createStatement();
     }
 
-    public Statement getStatement() {
+    public synchronized Statement getStatement() throws ObjectInitException, CloseConnectorException {
+        if (close){
+            throw new CloseConnectorException();
+        }
+        if (statement == null){
+            throw new ObjectInitException("Объект не инициализирован!");
+        }
         return statement;
     }
 
-    public Connection getConnection() {
+    public synchronized Connection getConnection() throws ObjectInitException, CloseConnectorException {
+        if (close){
+            throw new CloseConnectorException();
+        }
+        if (connection == null){
+            throw new ObjectInitException("Объект не инициализирован!");
+        }
         return connection;
     }
 
-    public Driver getDriver() {
+    public synchronized Driver getDriver() throws ObjectInitException, CloseConnectorException {
+        if (close){
+            throw new CloseConnectorException();
+        }
+        if (driver == null){
+            throw new ObjectInitException("Объект не инициализирован!");
+        }
         return driver;
     }
 
-    public void close() throws SQLException {
+    public synchronized void close() throws SQLException, CloseConnectorException {
+        if (close){
+            throw new CloseConnectorException();
+        }
+        close = true;
         connection.close();
+        statement.close();
     }
 
     /**
      * Данная функция считывает логин и пароль от базы данных из json-файла
      * @throws IOException если файл не найден или чтение не удается
      */
-    private void getLogPass() throws IOException {
+    private synchronized void getLogPass() throws IOException {
         JsonReader reader =  new Gson().newJsonReader(new FileReader(LOG_PASS_DATABASE));
         reader.beginObject();
         reader.nextName();

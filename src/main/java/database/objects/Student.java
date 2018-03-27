@@ -1,6 +1,8 @@
 package database.objects;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import database.exceptions.IllegalObjectStateException;
 
@@ -9,51 +11,55 @@ import database.exceptions.IllegalObjectStateException;
  */
 public class Student {
 
+    @Expose
     private Integer id;
 
+    @Expose(serialize = false, deserialize = false)
+    private String login;
+
+    @Expose(serialize = false, deserialize = false)
+    private String password;
+
+    @Expose
     @SerializedName("first_name")
     private String firstName;
 
+    @Expose
     @SerializedName("middle_name")
     private String middleName;
 
+    @Expose
     @SerializedName("last_name")
     private String lastName;
 
+    @Expose
     private String birthday;
 
+    @Expose
     private String gender;
 
+    @Expose
     @SerializedName("phone_number")
     private String phoneNumber;
 
-    private String faculty;
-
-    /**
-     * Бакалавр, магистр или специалист
-     */
-    private String graduation;
-
-    private Byte course;
-
-    /**
-     * Сокращенное название специальности
-     */
-    private String specialization;
 
     /**
      * Полный номер группы, например <code>"6209-010302D"</code>
      */
-    private String group;
+    @Expose
+    private StudyGroup group;
 
+    @Expose
     @SerializedName("group_president")
-    private Boolean groupPresident;
+    private Integer groupPresident;
 
+    @Expose
     @SerializedName("group_proforg")
-    private Boolean groupProforg;
+    private Integer groupProforg;
 
+    @Expose
     @SerializedName("group_manager")
-    private Boolean groupManager;
+    private Integer groupManager;
 
 
     public Integer getId() {
@@ -119,9 +125,63 @@ public class Student {
         return this;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
+    public Student setLogin(String login) {
+        this.login = login;
+        return this;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Student setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public String getGroup() {
+        return group.getNumber();
+    }
+
+    public Student setGroup(StudyGroup group) {
+        this.group = group;
+        return this;
+    }
+
+    public Boolean isGroupPresident() {
+        return groupPresident != 0;
+    }
+
+    public Student setGroupPresident(Boolean groupPresident) {
+        this.groupPresident = groupPresident ? 1 : 0;
+        return this;
+    }
+
+    public Boolean isGroupProforg() {
+        return groupProforg != 0;
+    }
+
+    public Student setGroupProforg(Boolean groupProforg) {
+        this.groupProforg = groupProforg ? 1 : 0;
+        return this;
+    }
+
+    public Boolean isGroupManager() {
+        return groupManager != 0;
+    }
+
+    public Student setGroupManager(Boolean groupManager) {
+        this.groupManager = groupManager ? 1 : 0;
+        return this;
+    }
+
     @Override
     public String toString() {
-        return new Gson().toJson(this);
+        return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(this);
     }
 
     /**
@@ -130,35 +190,32 @@ public class Student {
      * @throws IllegalObjectStateException если заполнены не все поля
      */
     public String toSQLInsertString() throws IllegalObjectStateException {
-        /*if (firstName == null || middleName == null
+        if (login == null || password == null
+                || firstName == null || middleName == null
                 || lastName == null || birthday == null
-                || gender == null || faculty == null
-                || graduation == null || course == null
-                || specialization == null || group == null){
+                || gender == null || group == null){
             throw new IllegalObjectStateException("Заполнены не все обязательные поля объекта 'Студент'");
-        }*/
+        }
         StringBuilder answer = new StringBuilder();
-        answer.append("firstName='").append(firstName).append('\'');
-        answer.append(", middleName='").append(middleName).append('\'');
-        answer.append(", lastName='").append(lastName).append('\'');
+        answer.append("login='").append(login).append('\'');
+        answer.append(", password='").append(password).append('\'');
+        answer.append(", first_name='").append(firstName).append('\'');
+        answer.append(", middle_name='").append(middleName).append('\'');
+        answer.append(", last_name='").append(lastName).append('\'');
         answer.append(", birthday='").append(birthday).append('\'');
         answer.append(", gender='").append(gender).append('\'');
         if (phoneNumber != null) {
-            answer.append(", phoneNumber='").append(phoneNumber).append('\'');
+            answer.append(", phone_number='").append(phoneNumber).append('\'');
         }
-        answer.append(", faculty='").append(faculty).append('\'');
-        answer.append(", graduation='").append(graduation).append('\'');
-        answer.append(", course=").append(course);
-        answer.append(", specialization='").append(specialization).append('\'');
-        answer.append(", group='").append(group).append('\'');
+        answer.append(", `group`='").append(group.getNumber()).append('\'');
         if (groupPresident != null){
-            answer.append(", groupPresident=").append(groupPresident);
+            answer.append(", group_president=").append(groupPresident);
         }
         if (groupProforg != null){
-            answer.append(", groupProforg=").append(groupProforg);
+            answer.append(", group_proforg=").append(groupProforg);
         }
         if (groupManager != null){
-            answer.append(", groupManager=").append(groupManager);
+            answer.append(", group_manager=").append(groupManager);
         }
         return answer.toString();
     }

@@ -1,25 +1,38 @@
 package database.objects;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import database.exceptions.IllegalObjectStateException;
 
 public class Teacher {
 
+    @Expose
     private Integer id;
 
+    @Expose(serialize = false, deserialize = false)
+    private String login;
+
+    @Expose(serialize = false, deserialize = false)
+    private String password;
+
+    @Expose
     @SerializedName("first_name")
     private String firstName;
 
+    @Expose
     @SerializedName("middle_name")
     private String middleName;
 
+    @Expose
     @SerializedName("last_name")
     private String lastName;
 
+    @Expose
     @SerializedName("phone_number")
     private String phoneNumber;
 
+    @Expose
     private String email;
 
     public Integer getId() {
@@ -76,6 +89,24 @@ public class Teacher {
         return this;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
+    public Teacher setLogin(String login) {
+        this.login = login;
+        return this;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Teacher setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
     public Teacher setFullName(String fullName){
         if(fullName != null && !fullName.isEmpty()) {
             String[] temp = fullName.split(" ");
@@ -97,12 +128,15 @@ public class Teacher {
      * @throws IllegalObjectStateException если заполнены не все поля
      */
     public String toSQLInsertString() throws IllegalObjectStateException {
-        /*if (firstName == null || middleName == null
+        if (login == null || password == null
+                ||firstName == null || middleName == null
                 || lastName == null ){
             throw new IllegalObjectStateException("Заполнены не все обязательные поля объекта 'Преподаватель'");
-        }*/
+        }
         StringBuilder answer = new StringBuilder();
-        answer.append("firstName='").append(firstName).append('\'');
+        answer.append("login='").append(login).append('\'');
+        answer.append(", password='").append(password).append('\'');
+        answer.append(", firstName='").append(firstName).append('\'');
         answer.append(", middleName='").append(middleName).append('\'');
         answer.append(", lastName='").append(lastName).append('\'');
         if (phoneNumber != null) {
