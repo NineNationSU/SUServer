@@ -187,13 +187,19 @@ public class Student {
     /**
      *
      * @return строка специального вида для занесения записи в базу данных
-     * @throws IllegalObjectStateException если заполнены не все поля
+     * @throws IllegalObjectStateException Ошибка в заполнении полей
      */
     public String toSQLInsertString() throws IllegalObjectStateException {
         if (login == null || password == null
                 || firstName == null || middleName == null
                 || lastName == null || birthday == null
                 || gender == null || group == null){
+            throw new IllegalObjectStateException("Заполнены не все обязательные поля объекта 'Студент'");
+        }
+		if (login.equals("") || password.equals("")
+                || firstName.equals("") || middleName.equals("")
+                || lastName.equals("") || birthday.equals("")
+                || gender.equals("") || group.equals("")){
             throw new IllegalObjectStateException("Заполнены не все обязательные поля объекта 'Студент'");
         }
         StringBuilder answer = new StringBuilder();
