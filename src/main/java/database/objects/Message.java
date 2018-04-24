@@ -34,6 +34,7 @@ public class Message {
     @Expose
     private String body;
 
+    // TODO заменить на Integer
     @Expose
     private List<Student> recipients;
 
@@ -135,7 +136,8 @@ public class Message {
 
     @Override
     public String toString() {
-        return  new GsonBuilder().setPrettyPrinting().create().toJson(this);
+        System.out.println(new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(this));
+        return  new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(this);
     }
 
     public String toSQLOutputMessage() throws IllegalObjectStateException {

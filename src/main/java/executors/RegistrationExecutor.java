@@ -6,12 +6,16 @@ import database.objects.Student;
 import database.objects.StudyGroup;
 import database.utility.DatabaseConnector;
 import database.utility.SQLExecutor;
+import exceptions.AuthException;
 import responses.ErrorResponse;
 import responses.OKResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
+
+import static constants.Strings.CHECK_REQUEST_PLEASE;
+import static constants.Strings.SERVER_EXCEPTION;
 
 public class RegistrationExecutor {
 
@@ -54,11 +58,12 @@ public class RegistrationExecutor {
                 SQLExecutor.insertNewStudent(student);
                 return new OKResponse().toString();
             }
-        }catch (DatabaseConnector.CloseConnectorException |IOException
-                | IllegalObjectStateException | SQLException | ObjectInitException e) {
+        }catch (SQLException | NullPointerException e){
+            return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
+        }catch (IOException | DatabaseConnector.CloseConnectorException | ObjectInitException  e) {
+            return new ErrorResponse(SERVER_EXCEPTION).toString();
+        }catch (IllegalObjectStateException e){
             return new ErrorResponse(e.getMessage()).toString();
-        }catch (NullPointerException e){
-            return new ErrorResponse("Fill all fields").toString();
         }
         return new ErrorResponse("Check field [type]").toString();
     }

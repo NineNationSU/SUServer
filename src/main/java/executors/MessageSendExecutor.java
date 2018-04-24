@@ -17,6 +17,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+import static constants.Strings.AUTH_EXCEPTION;
+import static constants.Strings.CHECK_REQUEST_PLEASE;
+import static constants.Strings.SERVER_EXCEPTION;
+
 public class MessageSendExecutor {
     private Map<String, String[]> request;
 
@@ -38,6 +42,9 @@ public class MessageSendExecutor {
         return answer;
     }
 
+    /**
+     * @return id отправленного сообщения
+     */
     @Override
     public String toString() {
         try {
@@ -58,15 +65,16 @@ public class MessageSendExecutor {
                     .setSenderId(senderId)
                     .setTime(time);
 
-            MessageDBExecutor.sendMessage(outMessage);
+            return new OKResponse(MessageDBExecutor.sendMessage(outMessage)).toString();
 
-            return new OKResponse().toString();
-
-        }catch (AuthException | SQLException | IOException | DatabaseConnector.CloseConnectorException | ObjectInitException | IllegalObjectStateException e) {
-            System.out.println(e.getMessage());
+        }catch (SQLException | NullPointerException e){
+            return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
+        } catch (AuthException e) {
+            return new ErrorResponse(AUTH_EXCEPTION).toString();
+        }catch (IOException | DatabaseConnector.CloseConnectorException | ObjectInitException  e) {
+            return new ErrorResponse(SERVER_EXCEPTION).toString();
+        }catch (IllegalObjectStateException e){
             return new ErrorResponse(e.getMessage()).toString();
-        }catch (NullPointerException e){
-            return new ErrorResponse("Fill all fields").toString();
         }
     }
 }

@@ -1,34 +1,25 @@
 package executors;
 
-import constants.Strings;
-import database.exceptions.IllegalObjectStateException;
 import database.exceptions.ObjectInitException;
-import database.objects.Message;
-import database.objects.Student;
 import database.utility.CheckTokenExecutor;
 import database.utility.DatabaseConnector;
 import database.utility.MessageDBExecutor;
-import database.utility.SQLExecutor;
 import exceptions.AuthException;
 import responses.ErrorResponse;
 import responses.OKResponse;
 
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import static constants.Strings.AUTH_EXCEPTION;
 import static constants.Strings.CHECK_REQUEST_PLEASE;
 import static constants.Strings.SERVER_EXCEPTION;
 
-public class MessageGetExecutor {
+public class MarkAsReadExecutor {
     private Map<String, String[]> request;
 
-    public MessageGetExecutor(Map<String, String[]> request){
+    public MarkAsReadExecutor(Map<String, String[]> request){
         this.request = request;
     }
 
@@ -36,12 +27,14 @@ public class MessageGetExecutor {
     public String toString() {
         try {
             Integer myId = Integer.parseInt(request.get("my_id")[0]);
+            Integer messageId = Integer.parseInt(request.get("message_id")[0]);
             String token = request.get("token")[0];
             if (!CheckTokenExecutor.check(myId, token)) {
                 throw new AuthException();
             }
-            return MessageDBExecutor.getMessage(myId);
+            MessageDBExecutor.markAsRead(myId, messageId);
 
+            return new OKResponse().toString();
         }catch (SQLException | NullPointerException e){
             return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
         } catch (AuthException e) {

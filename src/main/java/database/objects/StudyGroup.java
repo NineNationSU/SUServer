@@ -1,29 +1,37 @@
 package database.objects;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class StudyGroup {
 
+    @Expose
     private String number;
 
+    @Expose
     private String faculty;
 
     /**
      * Бакалавр, магистр или специалист
      */
+    @Expose
     private String graduation;
 
+    @Expose
     private Byte course;
 
     /**
      * Сокращенное название специальности
      */
+    @Expose
     private String specialization;
 
+    @Expose
     @SerializedName("group_president_id")
     private Integer groupPresidentId;
 
+    @Expose
     @SerializedName("group_proforg_id")
     private Integer groupProforgId;
 

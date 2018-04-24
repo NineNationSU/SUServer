@@ -53,8 +53,6 @@ public  class DatabaseConnector {
      */
     private synchronized void build() throws SQLException, IOException {
         getLogPass();
-        System.out.println(USER);
-        System.out.println(PASSWORD);
         driver = new com.mysql.cj.jdbc.Driver();
         DriverManager.registerDriver(driver);
         connection = DriverManager.getConnection(URL, USER, PASSWORD);

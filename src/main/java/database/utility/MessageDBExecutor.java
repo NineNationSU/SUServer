@@ -1,12 +1,10 @@
 package database.utility;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import database.exceptions.IllegalObjectStateException;
 import database.exceptions.ObjectInitException;
 import database.objects.Message;
 import database.objects.Student;
-import database.utility.DatabaseConnector;
+import utility.ListWrapper;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -26,7 +24,7 @@ public abstract class MessageDBExecutor {
         // TODO
         System.out.println(sqlRequest);
 
-        DatabaseConnector.getInstance().getStatement().execute(sqlRequest);
+        DatabaseConnector.getInstance().getStatement().executeUpdate(sqlRequest);
 
         sqlRequest = "SELECT MAX(`id`) FROM suappdatabase_test.ml_id" + senderId + ";";
         ResultSet set = DatabaseConnector.getInstance().getStatement().executeQuery(sqlRequest);
@@ -38,7 +36,9 @@ public abstract class MessageDBExecutor {
         messageForRecipients.setIdInSenderList(idInSenderList);
         messageForRecipients.setSenderId(Integer.parseInt(senderId));
         for (Student st : message.getRecipients()){
-
+            if (st.getId().equals(Integer.parseInt(senderId))){
+                continue;
+            }
             sqlRequest = "INSERT INTO suappdatabase_test.ml_id" + st.getId()
                     + " SET " + messageForRecipients.toSQLReceivedMessage() + ";";
 
@@ -52,14 +52,18 @@ public abstract class MessageDBExecutor {
      *  Возвращает json-объект из непрочитанных сообщенйи
      */
     public synchronized static String getMessage(Integer userId) throws DatabaseConnector.CloseConnectorException, SQLException, IOException, ObjectInitException {
+        List<Message> temp_list = new ArrayList<>();
         List<Message> list = new ArrayList<>();
 
         String sqlRequest = "SELECT * FROM suappdatabase_test.ml_id" + userId + ";";
         ResultSet set = DatabaseConnector.getInstance().getStatement().executeQuery(sqlRequest);
         ResultSet res;
-
         while (!set.isClosed() && set.next()){
-            Message temp = new Message(set);
+            temp_list.add(new Message(set));
+        }
+        set.close();
+
+        for(Message temp : temp_list){
             if (!temp.getSenderId().equals(userId) || temp.getOut() == 0) {
                 sqlRequest = "SELECT * FROM suappdatabase_test.ml_id" + temp.getSenderId() +
                         " WHERE id = " + temp.getIdInSenderList() + ";";
@@ -74,10 +78,18 @@ public abstract class MessageDBExecutor {
             }else{
                 list.add(temp);
             }
-
         }
-        set.close();
 
-        return  new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(list);
+        System.out.println(list);
+        System.out.println("\n\n\n");
+        System.out.println(new ListWrapper<Message>().setList(list).toString());
+        return new ListWrapper<Message>().setList(list).toString();
+    }
+
+    public synchronized static void markAsRead(Integer userId, Integer messageId) throws DatabaseConnector.CloseConnectorException, SQLException, IOException, ObjectInitException {
+        String tableName = "suappdatabase_test.ml_id" + userId;
+        String whereParam = "id = " + messageId;
+        String sqlRequest = "UPDATE " + tableName + " SET `read_state` = 1 WHERE " + whereParam +";";
+        DatabaseConnector.getInstance().getStatement().executeUpdate(sqlRequest);
     }
 }

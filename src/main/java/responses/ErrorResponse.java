@@ -1,7 +1,6 @@
 package responses;
 
 import com.google.gson.Gson;
-import org.apache.commons.lang3.StringEscapeUtils;
 
 public class ErrorResponse {
     private String response = "error";
