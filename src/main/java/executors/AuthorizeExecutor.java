@@ -1,7 +1,9 @@
 package executors;
 
+import com.google.gson.Gson;
 import database.exceptions.IllegalObjectStateException;
 import database.exceptions.ObjectInitException;
+import database.objects.Student;
 import database.utility.CheckTokenExecutor;
 import database.utility.DatabaseConnector;
 import database.utility.NoteDBExecutor;
@@ -39,7 +41,7 @@ public class AuthorizeExecutor {
                 if (!password.equals(passwordInDatabase)){
                     throw new AuthException("Неверный пароль!");
                 }
-                return set.getString("token");
+                return new Gson().toJson(new Student(set));
             }else{
                 throw new RegistrationExecutor.LKException();
             }

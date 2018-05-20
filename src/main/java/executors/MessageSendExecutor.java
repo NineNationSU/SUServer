@@ -28,17 +28,15 @@ public class MessageSendExecutor {
         this.request = request;
     }
 
-    private List<Student> getRecipientsFromQueryParam(String[] groupNumbers) throws SQLException, ObjectInitException, DatabaseConnector.CloseConnectorException, IOException {
+    private List<Student> getRecipientsFromQueryParam(String groupNumber) throws SQLException, ObjectInitException, DatabaseConnector.CloseConnectorException, IOException {
         ArrayList<Student> answer = new ArrayList<>();
 
-        for(String groupNumber : groupNumbers){
-            System.out.println("\t\t" + groupNumber);
-            ResultSet set = SQLExecutor.getStudentsByGroup(groupNumber);
-            while (set.next()){
-                answer.add(new Student().setId(set.getInt("id")));
-            }
-            set.close();
+        System.out.println("\t\t" + groupNumber);
+        ResultSet set = SQLExecutor.getStudentsByGroup(groupNumber);
+        while (set.next()){
+            answer.add(new Student().setId(set.getInt("id")));
         }
+        set.close();
         return answer;
     }
 
@@ -54,7 +52,7 @@ public class MessageSendExecutor {
                 throw new AuthException("Невалидный токен");
             }
             String body = request.get("body")[0];
-            List<Student> recipients = getRecipientsFromQueryParam(request.get("recipients")[0].split(","));
+            List<Student> recipients = getRecipientsFromQueryParam(request.get("recipients")[0]);
             Long time = new Date().getTime();
 
             Message outMessage = new Message()
@@ -64,8 +62,8 @@ public class MessageSendExecutor {
                     .setRecipients(recipients)
                     .setSenderId(senderId)
                     .setTime(time);
-
-            return new OKResponse(MessageDBExecutor.sendMessage(outMessage)).toString();
+            MessageDBExecutor.sendMessage(outMessage);
+            return "Отправлено";
 
         }catch (SQLException | NullPointerException e){
             return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();

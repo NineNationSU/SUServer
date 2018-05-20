@@ -192,8 +192,8 @@ public class Student {
         return groupPresident != 0;
     }
 
-    public Student setGroupPresident(Boolean groupPresident) {
-        this.groupPresident = groupPresident ? 1 : 0;
+    public Student setGroupPresident(Integer groupPresident) {
+        this.groupPresident = groupPresident;
         return this;
     }
 
@@ -201,8 +201,8 @@ public class Student {
         return groupProforg != 0;
     }
 
-    public Student setGroupProforg(Boolean groupProforg) {
-        this.groupProforg = groupProforg ? 1 : 0;
+    public Student setGroupProforg(Integer groupProforg) {
+        this.groupProforg = groupProforg;
         return this;
     }
 
@@ -210,8 +210,8 @@ public class Student {
         return groupManager != 0;
     }
 
-    public Student setGroupManager(Boolean groupManager) {
-        this.groupManager = groupManager ? 1 : 0;
+    public Student setGroupManager(Integer groupManager) {
+        this.groupManager = groupManager;
         return this;
     }
 
@@ -240,7 +240,7 @@ public class Student {
         }
         StringBuilder answer = new StringBuilder();
         answer.append("login='").append(login).append('\'');
-        answer.append(", token='").append(MD5Utility.getMD5(login+password)).append('\'');
+        answer.append(", token='").append(MD5Utility.getMD5(token)).append('\'');
         answer.append(", password='").append(password).append('\'');
         answer.append(", first_name='").append(firstName).append('\'');
         answer.append(", middle_name='").append(middleName).append('\'');

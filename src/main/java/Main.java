@@ -1,22 +1,5 @@
 
-import database.exceptions.IllegalObjectStateException;
-import database.objects.Message;
-import database.objects.Student;
-import database.objects.StudyGroup;
-import database.utility.DatabaseConnector;
-import database.utility.SQLExecutor;
 import executors.*;
-import ssau.lk.Grabber;
-import ssau.lk.StudentInfoGrabber;
-import utility.http.RequestUtility;
-
-import java.io.*;
-import java.lang.reflect.Array;
-import java.net.URISyntaxException;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Map;
 
 import static spark.Spark.*;
 
@@ -45,6 +28,18 @@ public class Main {
         get("/userInfo", (req, res) ->{
             System.out.println(res);
             String str = new UserInfoExecutor(req.queryMap().toMap()).toString();
+            System.out.println(str);
+            return str;
+        });
+        get("/classmates", (req, res) ->{
+            System.out.println(res);
+            String str = new ClassMatesExecutor(req.queryMap().toMap()).toString();
+            System.out.println(str);
+            return str;
+        });
+        get("/salary", (req, res) ->{
+            System.out.println(res);
+            String str = new SalaryExecutor(req.queryMap().toMap()).toString();
             System.out.println(str);
             return str;
         });

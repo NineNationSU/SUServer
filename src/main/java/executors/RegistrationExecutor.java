@@ -1,5 +1,6 @@
 package executors;
 
+import com.google.gson.Gson;
 import database.exceptions.IllegalObjectStateException;
 import database.exceptions.ObjectInitException;
 import database.objects.LogPass;
@@ -15,6 +16,7 @@ import ssau.lk.Grabber;
 import ssau.lk.StudentInfoGrabber;
 import ssau.lk.TimeTableGrabber;
 import timetable.TimeTable;
+import utility.MD5Utility;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -60,9 +62,9 @@ public class RegistrationExecutor {
                     student.setPhoneNumber(phoneNumber);
                 }
                 student = student
-                        .setGroupManager(Boolean.parseBoolean(request.get("group_manager")[0]))
-                        .setGroupPresident(Boolean.parseBoolean(request.get("group_president")[0]))
-                        .setGroupProforg(Boolean.parseBoolean(request.get("group_proforg")[0]))
+                        .setGroupManager(Integer.parseInt(request.get("group_manager")[0]))
+                        .setGroupPresident(Integer.parseInt(request.get("group_president")[0]))
+                        .setGroupProforg(Integer.parseInt(request.get("group_proforg")[0]))
                         .setGender(request.get("gender")[0])
                         .setBirthday(birthday);
                 String lk, rasp;
@@ -81,9 +83,9 @@ public class RegistrationExecutor {
                     throw new LKException();
                 }
                 student.setGroup(new StudyGroup().setNumber(groupInfo.get(0)))
-                        .setFirstName(studentName[0])
-                        .setMiddleName(studentName[1])
-                        .setLastName(studentName[2]);
+                        .setFirstName(studentName[1])
+                        .setMiddleName(studentName[2])
+                        .setLastName(studentName[0]);
 
                 String timeTableFileName = TIMETABLE_FOLDER + student.getGroup() + ".json";
                 File file = new File(timeTableFileName);
@@ -92,8 +94,9 @@ public class RegistrationExecutor {
                     w.print(rasp);
                     return rasp;
                 }
+                student.setToken(MD5Utility.getMD5(login + password));
                 SQLExecutor.insertNewStudent(student);
-                return student.toString();
+                return new Gson().toJson(student);
             }
         }catch (SQLException e){
             e.printStackTrace();
