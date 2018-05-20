@@ -50,7 +50,7 @@ public class MessageSendExecutor {
         try {
             Integer senderId = Integer.parseInt(request.get("my_id")[0]);
             String token = request.get("token")[0];
-            if (!CheckTokenExecutor.check(senderId, token)) {
+            if (!CheckTokenExecutor.check(token)) {
                 throw new AuthException("Невалидный токен");
             }
             String body = request.get("body")[0];

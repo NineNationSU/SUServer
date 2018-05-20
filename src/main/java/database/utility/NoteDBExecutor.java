@@ -2,7 +2,7 @@ package database.utility;
 
 import database.exceptions.ObjectInitException;
 import notes.Note;
-import utility.ListWrapper;
+import utility.NoteListWrapper;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -63,7 +63,7 @@ public abstract class NoteDBExecutor {
             notes.add(new Note(res));
         }
         System.out.println(notes);
-        return  new ListWrapper<Note>().setList(notes).toString();
+        return  new NoteListWrapper().setList(notes).toString();
 
     }
 

@@ -28,7 +28,7 @@ public class AddNoteExecutor {
         try {
             Integer myId = Integer.parseInt(request.get("my_id")[0]);
             String token = request.get("token")[0];
-            if (!CheckTokenExecutor.check(myId, token)) {
+            if (!CheckTokenExecutor.check(token)) {
                 throw new AuthException();
             }
             Note note = new Note()

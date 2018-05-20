@@ -6,6 +6,7 @@ import database.objects.Student;
 import database.objects.StudyGroup;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -23,8 +24,9 @@ public abstract class SQLExecutor {
      * @throws ObjectInitException                       если не удалось создать подключение к БД
      * @throws DatabaseConnector.CloseConnectorException если подключение к БД закрыто
      */
-    public synchronized static void insertNewStudent(Student student) throws IllegalObjectStateException, SQLException, IOException, ObjectInitException, DatabaseConnector.CloseConnectorException {
+    public synchronized static void insertNewStudent(Student student) throws IllegalObjectStateException, SQLException, IOException, ObjectInitException, DatabaseConnector.CloseConnectorException, NoSuchAlgorithmException {
         String params = student.toSQLInsertString();
+
 
         String sqlRequest = "INSERT INTO suappdatabase_test.students SET " + params + ";";
         DatabaseConnector.getInstance().getStatement().executeUpdate(sqlRequest);

@@ -4,7 +4,7 @@ import database.exceptions.IllegalObjectStateException;
 import database.exceptions.ObjectInitException;
 import database.objects.Message;
 import database.objects.Student;
-import utility.ListWrapper;
+import utility.MessagesListWrapper;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -82,8 +82,8 @@ public abstract class MessageDBExecutor {
 
         System.out.println(list);
         System.out.println("\n\n\n");
-        System.out.println(new ListWrapper<Message>().setList(list).toString());
-        return new ListWrapper<Message>().setList(list).toString();
+        //System.out.println(new MessagesListWrapper().setList(list).toString());
+        return new MessagesListWrapper().setList(list).toString();
     }
 
     public synchronized static void markAsRead(Integer userId, Integer messageId) throws DatabaseConnector.CloseConnectorException, SQLException, IOException, ObjectInitException {

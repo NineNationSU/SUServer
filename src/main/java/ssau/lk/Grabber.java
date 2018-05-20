@@ -45,7 +45,7 @@ public abstract class Grabber {
      * @throws IOException если не удается считать ответ на запрос
      */
     public static String getLK(String login, String password) throws URISyntaxException, IOException {
-        final String PASSPORT = "https://passport.ssau.ru/";
+        final String PASSPORT = "http://passport.ssau.ru/";
         final String PASSPORT_AJAX_AUTH = "https://passport.ssau.ru/ajax.php?action=auth&data_type=json";
         final String LK = "http://lk.ssau.ru/";
         HttpGet requestGet = new HttpGet();

@@ -49,5 +49,8 @@ public class Response {
         return answer;
     }
 
+    public Header[] getAllHeaders() {
+        return response.getAllHeaders();
+    }
 }
 
