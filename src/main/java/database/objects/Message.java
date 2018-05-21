@@ -29,10 +29,15 @@ public class Message {
     private Integer readState;
 
     @Expose
+    @SerializedName("sender_name")
+    private String senderName;
+
+    @Expose
     private Integer out;
 
     @Expose
     private String body;
+
 
     // TODO заменить на Integer
     @Expose
@@ -77,6 +82,15 @@ public class Message {
 
     public Message setSenderId(Integer senderId) {
         this.senderId = senderId;
+        return this;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public Message setSenderName(String senderName) {
+        this.senderName = senderName;
         return this;
     }
 

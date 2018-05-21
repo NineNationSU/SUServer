@@ -1,6 +1,7 @@
 package executors;
 
 import database.exceptions.ObjectInitException;
+import database.objects.Student;
 import database.utility.CheckTokenExecutor;
 import database.utility.DatabaseConnector;
 import database.utility.MessageDBExecutor;
@@ -26,20 +27,16 @@ public class MarkAsReadExecutor {
     @Override
     public String toString() {
         try {
-            Integer myId = Integer.parseInt(request.get("my_id")[0]);
             Integer messageId = Integer.parseInt(request.get("message_id")[0]);
             String token = request.get("token")[0];
-            if (!CheckTokenExecutor.check(token)) {
-                throw new AuthException();
-            }
-            MessageDBExecutor.markAsRead(myId, messageId);
-
+            Student student = CheckTokenExecutor.check(token);
+            MessageDBExecutor.markAsRead(student.getId(), messageId);
             return new OKResponse().toString();
         }catch (SQLException | NullPointerException e){
             return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
         } catch (AuthException e) {
             return new ErrorResponse(AUTH_EXCEPTION).toString();
-        }catch (IOException | DatabaseConnector.CloseConnectorException | ObjectInitException  e) {
+        }catch (IOException | ObjectInitException  e) {
             return new ErrorResponse(SERVER_EXCEPTION).toString();
         }
     }

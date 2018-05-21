@@ -1,18 +1,16 @@
 package executors;
 
 import database.exceptions.ObjectInitException;
+import database.objects.Student;
 import database.utility.CheckTokenExecutor;
 import database.utility.DatabaseConnector;
 import database.utility.NoteDBExecutor;
-import database.utility.SQLExecutor;
 import exceptions.AuthException;
-import notes.Note;
 import responses.ErrorResponse;
-import responses.OKResponse;
 
-import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 import static constants.Strings.AUTH_EXCEPTION;
@@ -29,15 +27,10 @@ public class GetNoteExecutor {
     @Override
     public String toString() {
         try {
-            Integer myId = Integer.parseInt(request.get("my_id")[0]);
+            String lesson = request.get("lesson")[0];
             String token = request.get("token")[0];
-            if (!CheckTokenExecutor.check(token)) {
-                throw new AuthException();
-            }
-            Note note = new Note()
-                    .setDate(request.get("date")[0])
-                    .setGroup(SQLExecutor.getGroupByStudentId(myId));
-            return NoteDBExecutor.getNote(note);
+            Student student = CheckTokenExecutor.check(token);
+            return NoteDBExecutor.getNote(lesson, student.getGroupNumber());
         } catch (SQLException e){
             // TODO
             System.out.println("sql exception");
@@ -46,7 +39,7 @@ public class GetNoteExecutor {
             return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
         } catch (AuthException e) {
             return new ErrorResponse(AUTH_EXCEPTION).toString();
-        }catch (IOException | DatabaseConnector.CloseConnectorException | ObjectInitException e) {
+        }catch (ObjectInitException e) {
             return new ErrorResponse(SERVER_EXCEPTION).toString();
         }
     }

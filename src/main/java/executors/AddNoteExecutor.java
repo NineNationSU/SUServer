@@ -1,14 +1,13 @@
 package executors;
 
 import database.exceptions.ObjectInitException;
-import database.objects.StudyGroup;
+import database.objects.Student;
 import database.utility.*;
 import exceptions.AuthException;
 import notes.Note;
 import responses.ErrorResponse;
 import responses.OKResponse;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -26,32 +25,19 @@ public class AddNoteExecutor {
     @Override
     public String toString() {
         try {
-            Integer myId = Integer.parseInt(request.get("my_id")[0]);
             String token = request.get("token")[0];
-            if (!CheckTokenExecutor.check(token)) {
-                throw new AuthException();
-            }
+            Student student = CheckTokenExecutor.check(token);
             Note note = new Note()
-                    .setDate(request.get("date")[0])
-                    .setGroup(SQLExecutor.getGroupByStudentId(myId))
-                    .setLessonNumber(Integer.parseInt(request.get("lesson_number")[0]))
-                    .setTitle(request.get("title")[0])
+                    .setGroup(student.getGroup())
+                    .setLesson(request.get("lesson")[0])
                     .setText(request.get("text")[0]);
-            Integer noteId;
-
-            if(!(noteId = NoteDBExecutor.findNote(note)).equals(-1)){
-                System.out.println("update");
-                NoteDBExecutor.updateNote(noteId, note.getTitle(), note.getText());
-            }else {
-                NoteDBExecutor.addNote(note);
-            }
+            NoteDBExecutor.addNote(note);
             return new OKResponse().toString();
         }catch (SQLException | NullPointerException e){
-            System.out.println(e.getMessage());
             return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
         } catch (AuthException e) {
             return new ErrorResponse(AUTH_EXCEPTION).toString();
-        }catch (IOException | DatabaseConnector.CloseConnectorException | ObjectInitException e) {
+        }catch (ObjectInitException e) {
             return new ErrorResponse(SERVER_EXCEPTION).toString();
         }
     }

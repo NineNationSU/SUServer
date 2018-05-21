@@ -12,6 +12,7 @@ import responses.ErrorResponse;
 import responses.OKResponse;
 
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
@@ -31,17 +32,16 @@ public class UserInfoExecutor {
     public String toString() {
         try {
             String token = request.get("token")[0];
-            if (!CheckTokenExecutor.check(token)) {
-                throw new AuthException();
-            }
+            CheckTokenExecutor.check(token);
             Integer id = Integer.parseInt(request.get("user_id")[0]);
-            String sqlRequest = "SELECT * FROM suappdatabase_test.students WHERE id=" + id + ";";
-            ResultSet set = DatabaseConnector.getInstance().getStatement().executeQuery(sqlRequest);
-            if (set.next()){
-                return new Student(set).toString();
-            }else{
-                throw new Exception("Студент не найден");
-            }
+            String sqlRequest = "SELECT * FROM suappdatabase_test.students WHERE id=?;";
+            PreparedStatement statement = DatabaseConnector.getInstance().getConnection().prepareStatement(sqlRequest);
+            statement.setInt(1, id);
+            ResultSet set = statement.executeQuery();
+            set.next();
+            String answer = new Student(set).toString();
+            set.close();
+            return answer;
         } catch (SQLException | NullPointerException e){
             e.printStackTrace();
             return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();

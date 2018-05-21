@@ -17,28 +17,22 @@ import static constants.FileNames.LOG_PASS_DATABASE;
  */
 public  class DatabaseConnector {
 
-    public static class CloseConnectorException extends Exception{
-        CloseConnectorException(){
-            super("DatabaseConnector is close");
-        }
-    }
-
     private String URL = "jdbc:mysql://localhost:3306/suappdatabase_test?autoReconnect=true&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC";
     private String USER;
     private String PASSWORD;
     private Connection connection;
     private Driver driver;
     private Statement statement;
-    private static Boolean close = false;
     private static DatabaseConnector instance;
 
-    public static synchronized DatabaseConnector getInstance() throws IOException, SQLException, CloseConnectorException {
-        if (close){
-            throw new CloseConnectorException();
-        }
+    public static synchronized DatabaseConnector getInstance() throws SQLException {
         if (instance == null){
             instance = new  DatabaseConnector();
-            instance.build();
+            try {
+                instance.build();
+            }catch (IOException e){
+                throw new SQLException();
+            }
         }
         return instance;
     }
@@ -59,41 +53,28 @@ public  class DatabaseConnector {
         statement = connection.createStatement();
     }
 
-    public synchronized Statement getStatement() throws ObjectInitException, CloseConnectorException {
-        if (close){
-            throw new CloseConnectorException();
-        }
+    public synchronized Statement getStatement() throws ObjectInitException {
         if (statement == null){
             throw new ObjectInitException("Объект не инициализирован!");
         }
         return statement;
     }
 
-    public synchronized Connection getConnection() throws ObjectInitException, CloseConnectorException {
-        if (close){
-            throw new CloseConnectorException();
-        }
+    public synchronized Connection getConnection() throws ObjectInitException {
         if (connection == null){
             throw new ObjectInitException("Объект не инициализирован!");
         }
         return connection;
     }
 
-    public synchronized Driver getDriver() throws ObjectInitException, CloseConnectorException {
-        if (close){
-            throw new CloseConnectorException();
-        }
+    public synchronized Driver getDriver() throws ObjectInitException {
         if (driver == null){
             throw new ObjectInitException("Объект не инициализирован!");
         }
         return driver;
     }
 
-    public synchronized void close() throws SQLException, CloseConnectorException {
-        if (close){
-            throw new CloseConnectorException();
-        }
-        close = true;
+    public synchronized void close() throws SQLException {
         connection.close();
         statement.close();
     }

@@ -1,5 +1,7 @@
 package ssau.lk;
 
+import database.exceptions.ObjectInitException;
+import database.utility.DatabaseConnector;
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -12,8 +14,13 @@ import utility.http.RequestUtility;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.commons.text.StringEscapeUtils.escapeJava;
 
 public abstract class Grabber {
     private static String getHeaderValueByName(Response response, String name){
@@ -45,6 +52,18 @@ public abstract class Grabber {
      * @throws IOException если не удается считать ответ на запрос
      */
     public static String getLK(String login, String password) throws URISyntaxException, IOException {
+        try{
+            String sqlRequest = "SELECT * FROM suappdatabase_test.lk_keys WHERE login=?;";
+            PreparedStatement statement = DatabaseConnector.getInstance().getConnection().prepareStatement(sqlRequest);
+            statement.setString(1, login);
+            ResultSet res = statement.executeQuery();
+            if(res.next()){
+                HttpGet requestGet =new HttpGet();
+                requestGet.setURI(new URI(res.getString("auth_key")));
+                Response response = RequestUtility.apacheGET(requestGet, true);
+                return trim(response.getAnswer());
+            }
+        } catch (SQLException | ObjectInitException ignored) {}
         final String PASSPORT = "http://passport.ssau.ru/";
         final String PASSPORT_AJAX_AUTH = "https://passport.ssau.ru/ajax.php?action=auth&data_type=json";
         final String LK = "http://lk.ssau.ru/";
@@ -52,7 +71,6 @@ public abstract class Grabber {
         HttpPost requestPost = new HttpPost();
         Response response;
 
-        System.out.println("Start");
         requestGet.setURI(new URI(PASSPORT));
         response = RequestUtility.apacheGET(requestGet, false);
         String incubePassportCookies = getCookiesFromResponse(response);
@@ -73,10 +91,45 @@ public abstract class Grabber {
 
         requestGet.setURI(new URI(PASSPORT_WITH_CLIENT_ID));
         requestGet.setHeader("Cookie", incubeCookie + ";" + ssauCookie);
+        response = RequestUtility.apacheGET(requestGet, false);
+
+        final String KEY = getHeaderValueByName(response, "Location");
+
+
+        try {
+            String sqlRequest = "SELECT COUNT(login) FROM suappdatabase_test.lk_keys WHERE login=?;";
+            PreparedStatement statement = DatabaseConnector.getInstance().getConnection().prepareStatement(sqlRequest);
+            statement.setString(1, login);
+            ResultSet set = statement.executeQuery();
+            if(set.next()){
+                if (set.getInt(1) == 1){
+                    sqlRequest = "UPDATE suappdatabase_test.lk_keys SET auth_key=? WHERE login=?;";
+                    statement = DatabaseConnector.getInstance().getConnection().prepareStatement(sqlRequest);
+                    statement.setString(2, login);
+                    statement.setString(1, KEY);
+                    statement.executeUpdate();
+                }else{
+                    sqlRequest = "INSERT INTO suappdatabase_test.lk_keys SET login=?, auth_key=?;";
+                    statement = DatabaseConnector.getInstance().getConnection().prepareStatement(sqlRequest);
+                    statement.setString(1, escapeJava(login));
+                    statement.setString(2, escapeJava(KEY));
+                    statement.executeUpdate();
+                }
+            }
+        } catch (SQLException | ObjectInitException ignored) {
+            ignored.printStackTrace();
+        }
+
+        requestGet.setURI(new URI(KEY));
+        requestGet.setHeader("Cookie", incubeCookie);
         response = RequestUtility.apacheGET(requestGet, true);
 
-        String lkPage = response.getAnswer();
+        return trim(response.getAnswer());
 
+
+    }
+
+    private static String trim(String lkPage){
         StringBuilder sb = new StringBuilder(lkPage.length() / 10);
         for (int i = 0; i < lkPage.length()-1; i++) {
             if ((lkPage.charAt(i) == ' ' || lkPage.charAt(i) == '\t')
@@ -86,9 +139,7 @@ public abstract class Grabber {
             sb.append(lkPage.charAt(i));
         }
         sb.append(lkPage.charAt(lkPage.length() - 1));
-        lkPage = sb.toString();
-        sb.delete(0, lkPage.length());
-        return lkPage;
+        return sb.toString();
     }
 
 }

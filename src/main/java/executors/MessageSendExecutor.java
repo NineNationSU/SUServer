@@ -28,7 +28,7 @@ public class MessageSendExecutor {
         this.request = request;
     }
 
-    private List<Student> getRecipientsFromQueryParam(String groupNumber) throws SQLException, ObjectInitException, DatabaseConnector.CloseConnectorException, IOException {
+    private List<Student> getRecipientsFromQueryParam(String groupNumber) throws SQLException, ObjectInitException, IOException {
         ArrayList<Student> answer = new ArrayList<>();
 
         System.out.println("\t\t" + groupNumber);
@@ -46,11 +46,8 @@ public class MessageSendExecutor {
     @Override
     public String toString() {
         try {
-            Integer senderId = Integer.parseInt(request.get("my_id")[0]);
             String token = request.get("token")[0];
-            if (!CheckTokenExecutor.check(token)) {
-                throw new AuthException("Невалидный токен");
-            }
+            Student student = CheckTokenExecutor.check(token);
             String body = request.get("body")[0];
             List<Student> recipients = getRecipientsFromQueryParam(request.get("recipients")[0]);
             Long time = new Date().getTime();
@@ -60,19 +57,19 @@ public class MessageSendExecutor {
                     .setBody(body)
                     .setReadState(1)
                     .setRecipients(recipients)
-                    .setSenderId(senderId)
+                    .setSenderId(student.getId())
+                    .setSenderName(student.getLastName() + " " + student.getFirstName())
                     .setTime(time);
             MessageDBExecutor.sendMessage(outMessage);
             return "Отправлено";
 
         }catch (SQLException | NullPointerException e){
+            e.printStackTrace();
             return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
         } catch (AuthException e) {
             return new ErrorResponse(AUTH_EXCEPTION).toString();
-        }catch (IOException | DatabaseConnector.CloseConnectorException | ObjectInitException  e) {
+        }catch (Exception  e) {
             return new ErrorResponse(SERVER_EXCEPTION).toString();
-        }catch (IllegalObjectStateException e){
-            return new ErrorResponse(e.getMessage()).toString();
         }
     }
 }

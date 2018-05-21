@@ -2,31 +2,22 @@ package executors;
 
 import com.google.gson.Gson;
 import database.exceptions.IllegalObjectStateException;
-import database.exceptions.ObjectInitException;
-import database.objects.LogPass;
 import database.objects.Student;
 import database.objects.StudyGroup;
-import database.utility.DatabaseConnector;
-import database.utility.LkDBExecutor;
 import database.utility.SQLExecutor;
-import exceptions.AuthException;
 import responses.ErrorResponse;
-import responses.OKResponse;
 import ssau.lk.Grabber;
 import ssau.lk.StudentInfoGrabber;
 import ssau.lk.TimeTableGrabber;
-import timetable.TimeTable;
 import utility.MD5Utility;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static constants.FileNames.TIMETABLE_FOLDER;
 import static constants.Strings.CHECK_REQUEST_PLEASE;
-import static constants.Strings.LK_LOG_PASS_NOT_FOUND;
 import static constants.Strings.SERVER_EXCEPTION;
 
 public class RegistrationExecutor {
@@ -87,7 +78,7 @@ public class RegistrationExecutor {
                         .setMiddleName(studentName[2])
                         .setLastName(studentName[0]);
 
-                String timeTableFileName = TIMETABLE_FOLDER + student.getGroup() + ".json";
+                String timeTableFileName = TIMETABLE_FOLDER + student.getGroupNumber() + ".json";
                 File file = new File(timeTableFileName);
                 if (!file.exists()) {
                     PrintWriter w = new PrintWriter(new FileWriter(timeTableFileName));
@@ -98,10 +89,13 @@ public class RegistrationExecutor {
                 SQLExecutor.insertNewStudent(student);
                 return new Gson().toJson(student);
             }
-        }catch (SQLException e){
+        }catch (NullPointerException | SQLException e) {
+            if (e.getMessage().contains("Duplicate")){
+                return new ErrorResponse("Повторная регистрация невозможна").toString();
+            }
             e.printStackTrace();
             return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
-        }catch (LKException | IllegalObjectStateException e){
+        } catch (LKException | IllegalObjectStateException e){
             return new ErrorResponse(e.getMessage()).toString();
         }catch (Exception e){
             return new ErrorResponse(SERVER_EXCEPTION).toString();

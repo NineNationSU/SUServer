@@ -5,25 +5,17 @@ import database.objects.LogPass;
 import database.objects.Student;
 
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public abstract class LkDBExecutor {
 
-    public static void insertStudentData(Student student) throws DatabaseConnector.CloseConnectorException, SQLException, IOException, ObjectInitException {
-        String sqlRequest = "INSERT INTO suappdatabase_test.lk_ssau SET " +
-                "student_id = " + student.getId() + ", " +
-                "login = '" + student.getLogin() + "', " +
-                "password = '" + student.getPassword() + "';";
-
-        DatabaseConnector.getInstance().getStatement().executeUpdate(sqlRequest);
-    }
-
-    public static LogPass getStudentLKData(Integer id) throws DatabaseConnector.CloseConnectorException, SQLException, IOException, ObjectInitException {
-        String sqlRequest = "SELECT * FROM suappdatabase_test.lk_ssau WHERE " +
-                "student_id = " + id + ";";
-        ResultSet set = DatabaseConnector.getInstance().getStatement().executeQuery(sqlRequest);
-
+    public static LogPass getStudentLKData(String token) throws SQLException, ObjectInitException, NullPointerException {
+        String sqlRequest = "SELECT * FROM suappdatabase_test.students WHERE token=?;";
+        PreparedStatement statement = DatabaseConnector.getInstance().getConnection().prepareStatement(sqlRequest);
+        statement.setString(1, token);
+        ResultSet set = statement.executeQuery();
         if (set.next()){
             LogPass logPass = new LogPass();
 
@@ -32,6 +24,6 @@ public abstract class LkDBExecutor {
 
             return logPass;
         }
-        return null;
+        throw new NullPointerException("Студент не найден!");
     }
 }

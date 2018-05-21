@@ -35,18 +35,15 @@ public class MessageGetExecutor {
     @Override
     public String toString() {
         try {
-            Integer myId = Integer.parseInt(request.get("my_id")[0]);
             String token = request.get("token")[0];
-            if (!CheckTokenExecutor.check(token)) {
-                throw new AuthException();
-            }
-            return MessageDBExecutor.getMessage(myId);
+            Student student = CheckTokenExecutor.check(token);
+            return MessageDBExecutor.getMessage(student.getId());
 
         }catch (SQLException | NullPointerException e){
             return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
         } catch (AuthException e) {
             return new ErrorResponse(AUTH_EXCEPTION).toString();
-        }catch (IOException | DatabaseConnector.CloseConnectorException | ObjectInitException  e) {
+        }catch (ObjectInitException  e) {
             return new ErrorResponse(SERVER_EXCEPTION).toString();
         }
     }

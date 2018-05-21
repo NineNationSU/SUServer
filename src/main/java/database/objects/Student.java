@@ -179,13 +179,29 @@ public class Student {
      *
      * @return номер группы
      */
-    public String getGroup() {
+    public String getGroupNumber() {
         return group.getNumber();
+    }
+
+    public StudyGroup getGroup() {
+        return group;
     }
 
     public Student setGroup(StudyGroup group) {
         this.group = group;
         return this;
+    }
+
+    public Integer getGroupPresident() {
+        return groupPresident;
+    }
+
+    public Integer getGroupProforg() {
+        return groupProforg;
+    }
+
+    public Integer getGroupManager() {
+        return groupManager;
     }
 
     public Boolean isGroupPresident() {
@@ -221,46 +237,25 @@ public class Student {
     }
 
     /**
-     *
-     * @return строка специального вида для занесения записи в базу данных
-     * @throws IllegalObjectStateException Ошибка в заполнении полей
+     * Функция проверяет заполненность полей объекта
+     * @throws IllegalObjectStateException Отсутствие полей
      */
-    public String toSQLInsertString() throws IllegalObjectStateException, NoSuchAlgorithmException {
-        if (login == null || password == null
+    public void sqlCheck() throws IllegalObjectStateException {
+        if (login == null || password == null || token == null
                 || firstName == null || middleName == null
                 || lastName == null || birthday == null
-                || gender == null || group == null){
-            throw new IllegalObjectStateException("Заполнены не все обязательные поля объекта 'Студент'");
-        }
-		if (login.equals("") || password.equals("")
+                || gender == null || group == null
+                || login.equals("") || password.equals("") || token.equals("")
                 || firstName.equals("") || middleName.equals("")
                 || lastName.equals("") || birthday.equals("")
                 || gender.equals("") || group.getNumber().equals("")){
             throw new IllegalObjectStateException("Заполнены не все обязательные поля объекта 'Студент'");
         }
-        StringBuilder answer = new StringBuilder();
-        answer.append("login='").append(login).append('\'');
-        answer.append(", token='").append(MD5Utility.getMD5(token)).append('\'');
-        answer.append(", password='").append(password).append('\'');
-        answer.append(", first_name='").append(firstName).append('\'');
-        answer.append(", middle_name='").append(middleName).append('\'');
-        answer.append(", last_name='").append(lastName).append('\'');
-        answer.append(", birthday='").append(birthday).append('\'');
-        answer.append(", gender='").append(gender).append('\'');
-        if (phoneNumber != null) {
-            answer.append(", phone_number='").append(phoneNumber).append('\'');
+        if(groupProforg == null || groupPresident == null
+                || groupManager == null){
+            throw new IllegalObjectStateException("Укажите тип студента(студент/староста/профорг)");
         }
-        answer.append(", `group`='").append(group.getNumber()).append('\'');
-        if (groupPresident != null){
-            answer.append(", group_president=").append(groupPresident);
-        }
-        if (groupProforg != null){
-            answer.append(", group_proforg=").append(groupProforg);
-        }
-        if (groupManager != null){
-            answer.append(", group_manager=").append(groupManager);
-        }
-        return answer.toString();
+
     }
 
     public static Student loadFromJson(String jsonString){

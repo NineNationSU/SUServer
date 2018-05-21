@@ -12,6 +12,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import responses.ErrorResponse;
 import ssau.lk.Grabber;
+
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -37,22 +39,8 @@ public class SalaryExecutor {
     public String toString() {
         try {
             String token = request.get("token")[0];
-            if (!CheckTokenExecutor.check(token)) {
-                throw new AuthException();
-            }
-            String sqlRequest = "SELECT * FROM suappdatabase_test.students WHERE token='" + token + "';";
-            System.out.println(sqlRequest);
-            ResultSet set = DatabaseConnector.getInstance().getStatement().executeQuery(sqlRequest);
-            Student student;
-            if (set.next()){
-                student = new Student(set);
-            }else{
-                return new ErrorResponse("Студент не найден").toString();
-            }
-            set.close();
-
+            Student student = CheckTokenExecutor.check(token);
             String lk = Grabber.getLK(student.getLogin(), student.getPassword());
-
             return salary(lk);
         }catch (NullPointerException e){
             e.printStackTrace();

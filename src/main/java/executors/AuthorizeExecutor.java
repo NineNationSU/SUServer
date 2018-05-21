@@ -1,25 +1,16 @@
 package executors;
 
 import com.google.gson.Gson;
-import database.exceptions.IllegalObjectStateException;
-import database.exceptions.ObjectInitException;
 import database.objects.Student;
-import database.utility.CheckTokenExecutor;
 import database.utility.DatabaseConnector;
-import database.utility.NoteDBExecutor;
-import database.utility.SQLExecutor;
 import exceptions.AuthException;
-import notes.Note;
 import responses.ErrorResponse;
-import responses.OKResponse;
-import utility.MD5Utility;
 
-import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static constants.Strings.AUTH_EXCEPTION;
 import static constants.Strings.CHECK_REQUEST_PLEASE;
 import static constants.Strings.SERVER_EXCEPTION;
 
@@ -34,14 +25,19 @@ public class AuthorizeExecutor {
     public String toString() {
         try {
             String login = request.get("login")[0], password = request.get("password")[0];
-            String sqlRequest = "SELECT * FROM suappdatabase_test.students WHERE login='" + login +"';";
-            ResultSet set = DatabaseConnector.getInstance().getStatement().executeQuery(sqlRequest);
+            String sqlRequest = "SELECT * FROM suappdatabase_test.students WHERE login=?;";
+            PreparedStatement statement = DatabaseConnector.getInstance().getConnection().prepareStatement(sqlRequest);
+            statement.setString(1, login);
+            ResultSet set = statement.executeQuery();
             if(set.next()){
                 String passwordInDatabase = set.getString("password");
                 if (!password.equals(passwordInDatabase)){
+                    set.close();
                     throw new AuthException("Неверный пароль!");
                 }
-                return new Gson().toJson(new Student(set));
+                Student student = new Student(set);
+                set.close();
+                return new Gson().toJson(student);
             }else{
                 throw new RegistrationExecutor.LKException();
             }

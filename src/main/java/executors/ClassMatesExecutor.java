@@ -6,6 +6,7 @@ import database.utility.DatabaseConnector;
 import exceptions.AuthException;
 import responses.ErrorResponse;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
@@ -24,23 +25,12 @@ public class ClassMatesExecutor {
     public String toString() {
         try {
             String token = request.get("token")[0];
-            if (!CheckTokenExecutor.check(token)) {
-                throw new AuthException();
-            }
-            String sqlRequest = "SELECT * FROM suappdatabase_test.students WHERE token='" + token + "';";
-            System.out.println(sqlRequest);
-            ResultSet set = DatabaseConnector.getInstance().getStatement().executeQuery(sqlRequest);
-            ResultSet res;
-            Student student;
-            if (set.next()){
-                student = new Student(set);
-            }else{
-                return new ErrorResponse("Студент не найден").toString();
-            }
-            set.close();
-            sqlRequest = "SELECT * FROM suappdatabase_test.students WHERE `group`='"
-                    + student.getGroup() + "';";// "' AND id!=" + student.getId() + ";";
-            res =  DatabaseConnector.getInstance().getStatement().executeQuery(sqlRequest);
+            Student student = CheckTokenExecutor.check(token);
+            String sqlRequest = "SELECT * FROM suappdatabase_test.students WHERE `group`=?;";// "' AND id!=" + student.getId() + ";";
+            PreparedStatement statement = DatabaseConnector.getInstance().getConnection().prepareStatement(sqlRequest);
+            statement.setString(1, student.getGroupNumber());
+            //statement.setInt(2, student.getId());
+            ResultSet res = statement.executeQuery();
             StringBuilder sb = new StringBuilder();
             while (res.next()){
                 sb.append(res.getString("last_name")).append(' ');

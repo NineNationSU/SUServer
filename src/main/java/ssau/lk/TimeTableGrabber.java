@@ -34,7 +34,6 @@ public abstract class TimeTableGrabber {
             for( int j = 0; j < day_rasp_blocks.size(); ++j){
                 DayTimeTable dayTimeTable = new DayTimeTable().setDayOfWeek(j+1);
                 String dayName = day_rasp_blocks.get(j).select("div.rasp_block_title").text();
-                System.out.println(dayName);
                 Elements couples = day_rasp_blocks.get(j).select("div.para_wrapper");
                 int numberOfCouple = 0;
                 for (Element couple : couples) {
@@ -106,16 +105,14 @@ public abstract class TimeTableGrabber {
                     }else {
                         dayTimeTable.getCouple().add(null);
                     }
-                    System.out.println();
 
                 }
                 weekTimeTable.getDays().add(dayTimeTable);
-                System.out.println();
             }
             timeTable.getWeeks().add(weekTimeTable);
 
         }
-        System.out.println(timeTable);
+        //System.out.println(timeTable);
         return timeTable.toString();
     }
 

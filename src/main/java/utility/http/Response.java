@@ -2,7 +2,6 @@ package utility.http;
 
 
 import org.apache.http.*;
-import org.apache.http.params.HttpParams;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -8,7 +8,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.*;
@@ -82,6 +84,7 @@ public abstract class RequestUtility {
 		}else {
 			httpClient = HttpClientBuilder.create().disableRedirectHandling().build();
 		}
-		return new Response(httpClient.execute(httpGet));
+		HttpResponse res = httpClient.execute(httpGet);
+		return new Response(res);
 	}
 }
