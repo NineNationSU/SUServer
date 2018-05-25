@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Класс, описывающий запись сообщения в БД
+ */
 public class Message {
     @Expose
     @SerializedName("message_id")
@@ -54,6 +57,7 @@ public class Message {
 
         readState = set.getInt("read_state");
         out = set.getInt("out");
+        senderName = set.getString("sender_name");
         if (out == 0){
             idInSenderList = set.getInt("id_in_sender_list");
         }else {

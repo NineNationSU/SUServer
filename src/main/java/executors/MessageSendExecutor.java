@@ -1,16 +1,13 @@
 package executors;
 
-import database.exceptions.IllegalObjectStateException;
 import database.exceptions.ObjectInitException;
 import database.objects.Message;
 import database.objects.Student;
 import database.utility.CheckTokenExecutor;
-import database.utility.DatabaseConnector;
 import database.utility.MessageDBExecutor;
 import database.utility.SQLExecutor;
 import exceptions.AuthException;
-import responses.ErrorResponse;
-import responses.OKResponse;
+import responses.ServerResponse;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -40,18 +37,18 @@ public class MessageSendExecutor {
         return answer;
     }
 
-    /**
-     * @return id отправленного сообщения
-     */
     @Override
     public String toString() {
         try {
-            String token = request.get("token")[0];
+            String token = request.get(constants.Strings.TOKEN)[0];
             Student student = CheckTokenExecutor.check(token);
+            if (!student.isGroupManager() && !student.isGroupPresident() && !student.isGroupProforg()){
+                return new ServerResponse("Вашему типу пользователя запрещено рассылать сообщения").toString();
+            }
             String body = request.get("body")[0];
             List<Student> recipients = getRecipientsFromQueryParam(request.get("recipients")[0]);
             Long time = new Date().getTime();
-
+            System.out.println(body);
             Message outMessage = new Message()
                     .setOut(1)
                     .setBody(body)
@@ -61,15 +58,15 @@ public class MessageSendExecutor {
                     .setSenderName(student.getLastName() + " " + student.getFirstName())
                     .setTime(time);
             MessageDBExecutor.sendMessage(outMessage);
-            return "Отправлено";
+            return new ServerResponse("Отправлено").toString();
 
         }catch (SQLException | NullPointerException e){
             e.printStackTrace();
-            return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
+            return new ServerResponse(CHECK_REQUEST_PLEASE).toString();
         } catch (AuthException e) {
-            return new ErrorResponse(AUTH_EXCEPTION).toString();
+            return new ServerResponse(AUTH_EXCEPTION).toString();
         }catch (Exception  e) {
-            return new ErrorResponse(SERVER_EXCEPTION).toString();
+            return new ServerResponse(SERVER_EXCEPTION).toString();
         }
     }
 }

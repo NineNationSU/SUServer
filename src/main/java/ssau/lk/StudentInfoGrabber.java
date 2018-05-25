@@ -8,6 +8,9 @@ import org.jsoup.select.Elements;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+/**
+ * Классю предоставляющий методы для выкачивания информации о студенте
+ */
 public class StudentInfoGrabber {
     public static String[] getStudentName(String lk){
         Document document = Jsoup.parse(lk);

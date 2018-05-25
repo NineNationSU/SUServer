@@ -3,10 +3,13 @@ package utility;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import notes.Note;
+import database.objects.Note;
 
 import java.util.List;
 
+/**
+ * Класс-обертка для списка заметок
+ */
 public class NoteListWrapper {
     @Expose
     @SerializedName("response")

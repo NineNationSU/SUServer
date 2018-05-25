@@ -13,7 +13,9 @@ import java.sql.SQLException;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeJava;
 
-
+/**
+ * Класс, предоставляющий разнообразные методы для взаимодействия с БД
+ */
 public abstract class SQLExecutor {
 
     /**

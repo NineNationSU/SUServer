@@ -5,7 +5,7 @@ import database.exceptions.IllegalObjectStateException;
 import database.objects.Student;
 import database.objects.StudyGroup;
 import database.utility.SQLExecutor;
-import responses.ErrorResponse;
+import responses.ServerResponse;
 import ssau.lk.Grabber;
 import ssau.lk.StudentInfoGrabber;
 import ssau.lk.TimeTableGrabber;
@@ -20,6 +20,9 @@ import static constants.FileNames.TIMETABLE_FOLDER;
 import static constants.Strings.CHECK_REQUEST_PLEASE;
 import static constants.Strings.SERVER_EXCEPTION;
 
+/**
+ * Класс, обеспечивающий взаимодействие сервера и БД и предоставляющий метод для регистрации студента
+ */
 public class RegistrationExecutor {
 
     public static class LKException extends Exception{
@@ -34,6 +37,10 @@ public class RegistrationExecutor {
         this.request = request;
     }
 
+    /**
+     *
+     * @return объект, характеризующий харегистрированного студента
+     */
     @Override
     public String toString() {
         try {
@@ -91,15 +98,15 @@ public class RegistrationExecutor {
             }
         }catch (NullPointerException | SQLException e) {
             if (e.getMessage().contains("Duplicate")){
-                return new ErrorResponse("Повторная регистрация невозможна").toString();
+                return new ServerResponse("Повторная регистрация невозможна").toString();
             }
             e.printStackTrace();
-            return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
+            return new ServerResponse(CHECK_REQUEST_PLEASE).toString();
         } catch (LKException | IllegalObjectStateException e){
-            return new ErrorResponse(e.getMessage()).toString();
+            return new ServerResponse(e.getMessage()).toString();
         }catch (Exception e){
-            return new ErrorResponse(SERVER_EXCEPTION).toString();
+            return new ServerResponse(SERVER_EXCEPTION).toString();
         }
-        return new ErrorResponse("Check field [type]").toString();
+        return new ServerResponse("Check field [type]").toString();
     }
 }

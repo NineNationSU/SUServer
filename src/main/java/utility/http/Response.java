@@ -6,8 +6,12 @@ import org.apache.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Locale;
 
+/**
+ * Объект, описывающий ответ на HTTP-запрос
+ */
 public class Response {
     private HttpResponse response;
     private String answer = "";
@@ -30,7 +34,7 @@ public class Response {
     public String getAnswer() throws IOException {
         if (answer.isEmpty()) {
             BufferedReader in;
-            in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            in = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), Charset.forName("UTF-8")));
             String temp;
             StringBuilder sb = new StringBuilder();
             while ((temp = in.readLine()) != null) {

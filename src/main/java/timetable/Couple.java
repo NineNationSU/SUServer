@@ -4,6 +4,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import database.exceptions.IllegalObjectStateException;
 
+/**
+ * Объект, описывающий пару
+ */
 public class Couple {
     @SerializedName("by_subgroups")
     private Boolean bySubgroups;

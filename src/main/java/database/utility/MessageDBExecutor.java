@@ -16,7 +16,9 @@ import java.util.List;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeJava;
 
-
+/**
+ * Класс, обеспечивающий взаимодействие с таблицей сообщений в БД
+ */
 public abstract class MessageDBExecutor {
 
     /**
@@ -34,7 +36,7 @@ public abstract class MessageDBExecutor {
         statement.setInt(1, senderId);
         statement.setString(2, message.getSenderName());
         String body = escapeJava(message.getBody());
-        statement.setString(3, body);
+        statement.setString(3, message.getBody());
         StringBuilder recipients = new StringBuilder();
         for (int i = 0; i < message.getRecipients().size(); i++) {
             recipients.append(message.getRecipients().get(i).getId());
@@ -54,7 +56,7 @@ public abstract class MessageDBExecutor {
             if (st.getId().equals(senderId)){
                 continue;
             }
-            sqlRequest = "INSERT INTO suappdatabase_test.ml_id1"/* + st.getId() */+ " SET "
+            sqlRequest = "INSERT INTO suappdatabase_test.ml_id"+ st.getId()+ " SET "
                     + "sender_id=?, id_in_sender_list=?, sender_name=?, read_state=0, `out`=0, `time`=?;";
             statement = DatabaseConnector.getInstance().getConnection().prepareStatement(sqlRequest);
 
@@ -102,9 +104,6 @@ public abstract class MessageDBExecutor {
             }
         }
 
-        System.out.println(list);
-        System.out.println("\n\n\n");
-        //System.out.println(new MessagesListWrapper().setList(list).toString());
         return new MessagesListWrapper().setList(list).toString();
     }
 

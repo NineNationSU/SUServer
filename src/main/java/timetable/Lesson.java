@@ -3,6 +3,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import database.objects.Teacher;
 
+/**
+ * Объект, описывающий занятие
+ */
 public class Lesson {
     private Integer number;
     private String discipline;

@@ -7,6 +7,9 @@ import database.objects.Message;
 
 import java.util.List;
 
+/**
+ * Класс-обертка для списка сообщений
+ */
 public class MessagesListWrapper {
     @Expose
     @SerializedName("response")

@@ -5,6 +5,9 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import database.exceptions.IllegalObjectStateException;
 
+/**
+ * Класс, описывающий объект "преподаватель"
+ */
 public class Teacher {
 
     @Expose

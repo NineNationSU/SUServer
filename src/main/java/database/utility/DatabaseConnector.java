@@ -13,7 +13,7 @@ import java.sql.*;
 import static constants.FileNames.LOG_PASS_DATABASE;
 
 /**
- *
+ * Класс, описывающий подключение к БД
  */
 public  class DatabaseConnector {
 

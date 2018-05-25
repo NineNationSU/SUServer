@@ -8,6 +8,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import timetable.*;
 
+/**
+ * Класс, предоставляющий метод для скачивания расписания из личного кабинета
+ */
 public abstract class TimeTableGrabber {
 
     public static String getTimeTable(String lk) throws IllegalObjectStateException {

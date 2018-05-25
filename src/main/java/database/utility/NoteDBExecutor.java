@@ -1,7 +1,7 @@
 package database.utility;
 
 import database.exceptions.ObjectInitException;
-import notes.Note;
+import database.objects.Note;
 import utility.NoteListWrapper;
 
 import java.sql.PreparedStatement;
@@ -12,7 +12,9 @@ import java.util.List;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeJava;
 
-
+/**
+ * Класс, предоставляющий методы для работы с заметками в БД
+ */
 public abstract class NoteDBExecutor {
     /**
      * @return id найденной заметки или -1, если заметка не найдена

@@ -1,5 +1,8 @@
 package database.objects;
 
+/**
+ * Структура логин/пароль
+ */
 public class LogPass {
     private String login;
     private String password;

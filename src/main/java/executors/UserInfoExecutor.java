@@ -1,26 +1,22 @@
 package executors;
 
-import database.exceptions.IllegalObjectStateException;
-import database.exceptions.ObjectInitException;
 import database.objects.Student;
 import database.utility.CheckTokenExecutor;
 import database.utility.DatabaseConnector;
-import database.utility.LkDBExecutor;
 import exceptions.AuthException;
-import org.apache.commons.lang3.ObjectUtils;
-import responses.ErrorResponse;
-import responses.OKResponse;
+import responses.ServerResponse;
 
-import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static constants.Strings.AUTH_EXCEPTION;
 import static constants.Strings.CHECK_REQUEST_PLEASE;
 import static constants.Strings.SERVER_EXCEPTION;
 
+/**
+ * Класс, обеспечивающий взаимодействие сервера и БД и предоставляющий метод для получения данных о любом студенте
+ */
 public class UserInfoExecutor {
     private Map<String, String[]> request;
 
@@ -31,7 +27,7 @@ public class UserInfoExecutor {
     @Override
     public String toString() {
         try {
-            String token = request.get("token")[0];
+            String token = request.get(constants.Strings.TOKEN)[0];
             CheckTokenExecutor.check(token);
             Integer id = Integer.parseInt(request.get("user_id")[0]);
             String sqlRequest = "SELECT * FROM suappdatabase_test.students WHERE id=?;";
@@ -44,12 +40,12 @@ public class UserInfoExecutor {
             return answer;
         } catch (SQLException | NullPointerException e){
             e.printStackTrace();
-            return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
+            return new ServerResponse(CHECK_REQUEST_PLEASE).toString();
         }catch (AuthException e){
-            return new ErrorResponse(e.getMessage()).toString();
+            return new ServerResponse(e.getMessage()).toString();
         }catch (Exception e){
             e.printStackTrace();
-            return new ErrorResponse(SERVER_EXCEPTION).toString();
+            return new ServerResponse(SERVER_EXCEPTION).toString();
         }
     }
 }

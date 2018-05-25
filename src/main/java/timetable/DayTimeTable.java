@@ -4,7 +4,9 @@ import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ *  Объект, описывающий расписание одного дня
+ */
 public class DayTimeTable {
     private Integer dayOfWeek;
     private List<Couple> couple;

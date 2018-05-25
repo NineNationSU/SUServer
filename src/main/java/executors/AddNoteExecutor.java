@@ -4,17 +4,17 @@ import database.exceptions.ObjectInitException;
 import database.objects.Student;
 import database.utility.*;
 import exceptions.AuthException;
-import notes.Note;
-import responses.ErrorResponse;
-import responses.OKResponse;
+import database.objects.Note;
+import responses.ServerResponse;
 
 import java.sql.SQLException;
 import java.util.Map;
 
-import static constants.Strings.AUTH_EXCEPTION;
-import static constants.Strings.CHECK_REQUEST_PLEASE;
-import static constants.Strings.SERVER_EXCEPTION;
+import static constants.Strings.*;
 
+/**
+ * Класс, обеспечивающий взаимодействие сервера и БД и предоставляющий метод для добавления заметок
+ */
 public class AddNoteExecutor {
     private Map<String, String[]> request;
 
@@ -25,20 +25,20 @@ public class AddNoteExecutor {
     @Override
     public String toString() {
         try {
-            String token = request.get("token")[0];
+            String token = request.get(TOKEN)[0];
             Student student = CheckTokenExecutor.check(token);
             Note note = new Note()
                     .setGroup(student.getGroup())
                     .setLesson(request.get("lesson")[0])
                     .setText(request.get("text")[0]);
             NoteDBExecutor.addNote(note);
-            return new OKResponse().toString();
+            return new ServerResponse("Заметка добавлена").toString();
         }catch (SQLException | NullPointerException e){
-            return new ErrorResponse(CHECK_REQUEST_PLEASE).toString();
+            return new ServerResponse(CHECK_REQUEST_PLEASE).toString();
         } catch (AuthException e) {
-            return new ErrorResponse(AUTH_EXCEPTION).toString();
+            return new ServerResponse(AUTH_EXCEPTION).toString();
         }catch (ObjectInitException e) {
-            return new ErrorResponse(SERVER_EXCEPTION).toString();
+            return new ServerResponse(SERVER_EXCEPTION).toString();
         }
     }
 }

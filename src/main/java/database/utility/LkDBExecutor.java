@@ -9,6 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Класс, предоставляющий метод для получения логина и пароля от ЛК
+ */
 public abstract class LkDBExecutor {
 
     public static LogPass getStudentLKData(String token) throws SQLException, ObjectInitException, NullPointerException {

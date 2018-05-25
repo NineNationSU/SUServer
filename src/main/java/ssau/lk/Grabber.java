@@ -8,6 +8,8 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import utility.http.Response;
 import utility.http.RequestUtility;
 
@@ -22,6 +24,9 @@ import java.util.List;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeJava;
 
+/**
+ * класс, предоставляющий методы для скачивания расписания с сайта lk.ssau.ru
+ */
 public abstract class Grabber {
     private static String getHeaderValueByName(Response response, String name){
         Header[] passportHeaders = response.getAllHeaders();
@@ -61,7 +66,11 @@ public abstract class Grabber {
                 HttpGet requestGet =new HttpGet();
                 requestGet.setURI(new URI(res.getString("auth_key")));
                 Response response = RequestUtility.apacheGET(requestGet, true);
-                return trim(response.getAnswer());
+                String lk = response.getAnswer();
+                Document document = Jsoup.parse(lk);
+                String salary =  document.select("div.right_col_inside").text();
+                if (!salary.equals(""))
+                    return trim(lk);
             }
         } catch (SQLException | ObjectInitException ignored) {}
         final String PASSPORT = "http://passport.ssau.ru/";

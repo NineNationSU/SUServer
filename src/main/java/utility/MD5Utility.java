@@ -3,6 +3,9 @@ package utility;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Утилитный класс для получения хэша строки
+ */
 public class MD5Utility {
     public static String getMD5(String text) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5");

@@ -6,6 +6,9 @@ import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Объект-обертка для расписания
+ */
 public class TimeTable {
     private List<String> time;
     private List<WeekTimeTable> weeks;

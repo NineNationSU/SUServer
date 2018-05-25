@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Класс, описывающий студенческую группу
+ */
 public class StudyGroup {
 
     @Expose
